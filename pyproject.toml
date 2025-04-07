@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "software-checker-mcp"
+version = "0.1.0"
+description = "MCP server for checking software repository quality and generating release notes"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastmcp>=0.1.0,<0.2.0",
+    "uvicorn>=0.15.0,<0.16.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "uvx",
+]
+
+[tool.uvx]
+entry = "src.software_checker_mcp.main:mcp" 
