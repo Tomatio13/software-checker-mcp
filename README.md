@@ -17,6 +17,12 @@
 1. **🔍 リポジトリ品質確認**: リポジトリの構造、ドキュメント、コード品質などを包括的にチェックし、改善点を提案します。
 2. **📝 リリースノート生成**: 指定したGitタグ間の変更を分析し、構造化されたリリースノートを自動生成します。
 
+## 📖 プロンプト
+Makiさん[Sunwood-ai-lbas](https://github.com/Sunwood-ai-labs/MysticLibrary/tree/main/prompts/coding)が公開されている
+以下のプロンプトを含んでいます。
+- リポジトリ品質確認プロンプト V3
+- Gitリリースノート作成プロンプト V1
+
 ## ディレクトリ構成
 
 ```
@@ -134,3 +140,6 @@ v1.0.0からv1.1.0までの変更に関するリリースノートを生成し�
 ```
 最新のリリースのリリースノートを生成してください。
 ```
+
+### 謝辞
+[Sunwood-ai-lbas](https://github.com/Sunwood-ai-labs/MysticLibrary/tree/main/prompts/coding)
