@@ -62,12 +62,13 @@ def get_latest_tags(count=2):
         タグのリスト（新しい順）
     """
     try:
-        # タグを取得してバージョン順にソート
+        # タイムアウトを5秒に設定
         result = subprocess.run(
             ["git", "tag", "--sort=-version:refname"],
             capture_output=True, 
             text=True, 
-            check=True
+            check=True,
+            timeout=5  # タイムアウトを追加
         )
         tags = result.stdout.strip().split('\n')
         
@@ -82,6 +83,11 @@ def get_latest_tags(count=2):
     except Exception as e:
         print(f"タグ取得エラー: {e}")
         return []
+
+def validate_git_tag(tag: str) -> bool:
+    # 安全なGitタグフォーマットのみを許可
+    import re
+    return bool(re.match(r'^[a-zA-Z0-9_\.\-]+$', tag))
 
 @mcp.tool()
 def generate_release_notes(
@@ -120,6 +126,18 @@ def generate_release_notes(
                 "error": "前回のタグが見つかりません。前回のタグを手動で指定するか、リポジトリに複数のタグを追加してください。",
                 "status": "error"
             }
+    
+    if current_tag and not validate_git_tag(current_tag):
+        return {
+            "error": "無効なタグ形式です。英数字、アンダースコア、ドット、ハイフンのみ使用できます。",
+            "status": "error"
+        }
+    
+    if previous_tag and not validate_git_tag(previous_tag):
+        return {
+            "error": "無効なタグ形式です。英数字、アンダースコア、ドット、ハイフンのみ使用できます。",
+            "status": "error"
+        }
     
     # git-release-notes-generator-prompt_v1.mdからプロンプトテンプレートを読み込む
     current_dir = Path(__file__).parent
