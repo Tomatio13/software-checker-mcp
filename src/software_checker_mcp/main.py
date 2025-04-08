@@ -4,7 +4,7 @@ from fastmcp import FastMCP
 import subprocess
 
 # FastMCPインスタンスを作成
-mcp = FastMCP("Graphic Recording MCP")
+mcp = FastMCP("Software Security Check MCP")
 
 @mcp.tool()
 def repository_quality_check(llm_model: str = "Claude 3.7 Sonnet") -> dict:
@@ -39,6 +39,51 @@ def repository_quality_check(llm_model: str = "Claude 3.7 Sonnet") -> dict:
         model_specific_notes = "（注: GPTモデルの場合、チェックリストの完全な実施と出力形式の遵守が重要です）"
     elif "claude" not in llm_model.lower():
         model_specific_notes = "（注: 指定されたLLMがチェックリストの全項目を評価し、出力形式に従うよう指示してください）"
+    
+    if model_specific_notes:
+        instruction += " " + model_specific_notes
+    
+    # クライアント側でLLMを実行するためのレスポンスを返す
+    return {
+        "prompt": prompt_template,
+        "instruction": instruction,
+        "status": "success",
+        "llm_model": llm_model
+    }
+
+@mcp.tool()
+def software_security_check(llm_model: str = "Claude 3.7 Sonnet") -> dict:
+    """
+    ソフトウェアセキュリティチェックプロンプトを返す
+    
+    Args:
+        llm_model: 使用するLLMモデル名 (デフォルト: "Claude 3.7 Sonnet")
+    
+    Returns:
+        プロンプトと指示を含む辞書
+    """
+    # software-security-check.mdからプロンプトテンプレートを読み込む
+    current_dir = Path(__file__).parent
+    security_check_path = current_dir / "software-security-check.md"
+    
+    try:
+        with open(security_check_path, "r", encoding="utf-8") as f:
+            prompt_template = f.read()
+    except FileNotFoundError:
+        return {
+            "error": "software-security-check.mdファイルが見つかりません。",
+            "status": "error"
+        }
+    
+    # 使用するLLMに応じた指示文を生成
+    instruction = f"このプロンプトを{llm_model}に送信して、ソフトウェアのセキュリティチェックを行ってください"
+    
+    # 特定のモデルに対する追加指示
+    model_specific_notes = ""
+    if "gpt" in llm_model.lower():
+        model_specific_notes = "（注: GPTモデルの場合、セキュリティチェックリストの完全な実施と出力形式の遵守が重要です）"
+    elif "claude" not in llm_model.lower():
+        model_specific_notes = "（注: 指定されたLLMがセキュリティチェックリストの全項目を評価し、出力形式に従うよう指示してください）"
     
     if model_specific_notes:
         instruction += " " + model_specific_notes
